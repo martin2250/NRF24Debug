@@ -1,0 +1,6 @@
+﻿<UserControl x:Class="NRF24Debug.MultiByteView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             Height="20">
+    <StackPanel x:Name="stack" Orientation="Horizontal"/>
+</UserControl>
