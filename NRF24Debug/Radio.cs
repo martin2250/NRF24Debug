@@ -32,7 +32,7 @@ namespace NRF24Debug
 		{
 			byte[] c = new byte[16];
 
-			for(int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++)
 			{
 				if (!conf.Pipes[i].Enabled)
 					continue;
@@ -97,7 +97,7 @@ namespace NRF24Debug
 			sup = new UsbSetupPacket(0xC0, 0x20, 0, 0, (short)buffer.Length);
 
 
-			 dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
+			dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
 
 			if (len != buffer.Length)
 				throw new Exception($"{len} bytes transferred instead of {buffer.Length}");

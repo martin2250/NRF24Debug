@@ -1,25 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace NRF24Debug
 {
-	/// <summary>
-	/// Interaktionslogik für MainWindow.xaml
-	/// </summary>
 	public partial class MainWindow : Window
 	{
 		Radio radio;
@@ -93,7 +81,7 @@ namespace NRF24Debug
 			timer.Interval = TimeSpan.FromMilliseconds(25);
 			timer.Tick += PollTimer_Elapsed;
 
-			for(int i = 0; i < 32; i++)
+			for (int i = 0; i < 32; i++)
 			{
 				comboBoxSendCount.Items.Add(i + 1);
 				var bv = txBuffer[i] = new ByteView();
@@ -102,7 +90,7 @@ namespace NRF24Debug
 			}
 			comboBoxSendCount.SelectionChanged += ComboBoxSendCount_SelectionChanged;
 			comboBoxSendCount.SelectedIndex = 31;
-        }
+		}
 
 		private void ComboBoxSendCount_SelectionChanged(object sender, SelectionChangedEventArgs e)
 		{
@@ -132,7 +120,7 @@ namespace NRF24Debug
 					dataGridRec.Items.Add(rx);
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				Disconnect();
 				MessageBox.Show("Error polling the Adapter:\n" + ex.Message);
@@ -204,10 +192,10 @@ namespace NRF24Debug
 			c.AddressPrefix[2] = bvAP2.Value;
 			c.AddressPrefix[3] = bvAP3.Value;
 
-			for(int i = 0; i < 5; i++)
+			for (int i = 0; i < 5; i++)
 			{
-				if (!(c.Pipes[i].Enabled = pipesEN[i].IsEnabled))
-					continue;				
+				if (!(c.Pipes[i].Enabled = pipesEN[i].IsChecked.Value))
+					continue;
 				c.Pipes[i].Address = pipesAddr[i].Value;
 				c.Pipes[i].AutoAcknowledge = pipesAA[i].IsChecked.Value;
 				c.Pipes[i].DynamicPayload = pipesPW[i].SelectedIndex == 33;
@@ -234,7 +222,7 @@ namespace NRF24Debug
 			TXPacket p = new TXPacket();
 			p.Payload = new byte[comboBoxSendCount.SelectedIndex + 1];
 
-			for(int i = 0; i < comboBoxSendCount.SelectedIndex + 1; i++)
+			for (int i = 0; i < comboBoxSendCount.SelectedIndex + 1; i++)
 			{
 				p.Payload[i] = txBuffer[i].Value;
 			}
@@ -268,6 +256,11 @@ namespace NRF24Debug
 				Disconnect();
 				MessageBox.Show("Error resetting device:\n" + ex.Message);
 			}
+		}
+
+		private void MenuItemClearRX_Click(object sender, RoutedEventArgs e)
+		{
+			dataGridRec.Items.Clear();
 		}
 	}
 }

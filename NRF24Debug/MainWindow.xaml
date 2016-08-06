@@ -28,7 +28,8 @@
             </MenuItem>
 
             <MenuItem Header="Settings"></MenuItem>
-            <MenuItem Header="About"></MenuItem>
+            <MenuItem Header="Clear RX History" Click="MenuItemClearRX_Click"/>
+            <MenuItem Header="About"/>
         </Menu>
 
         <ComboBox Grid.Column="2" SelectedIndex="0" HorizontalContentAlignment="Center" VerticalContentAlignment="Center" SelectionChanged="ComboBoxHex_SelectionChanged">
