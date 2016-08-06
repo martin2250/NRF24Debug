@@ -2,6 +2,7 @@
 using System.Linq;
 using LibUsbDotNet.Main;
 using LibUsbDotNet;
+using System.Collections.Generic;
 
 namespace NRF24Debug
 {
@@ -72,39 +73,48 @@ namespace NRF24Debug
 				throw new Exception($"{l} bytes written");
 		}
 
-		public RXPacket PollForRxPacket()
+		public RXPacket[] PollForRxPackets()
 		{
-			byte[] buffer = new byte[1];
-			UsbSetupPacket sup = new UsbSetupPacket(0xC0, 0x03, 0, 0, 1);
+			List<RXPacket> packets = new List<RXPacket>();
 
-			int len;
+			while (true)
+			{
+				byte[] buffer = new byte[1];
+				UsbSetupPacket sup = new UsbSetupPacket(0xC0, 0x03, 0, 0, 1);
 
-			dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
+				int len;
 
-			if (len != buffer.Length)
-				throw new Exception($"{len} bytes transferred instead of {buffer.Length}");
+				dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
 
-			if (buffer[0] == 0)
-				return null;
+				if (len != buffer.Length)
+					throw new Exception($"{len} bytes transferred instead of {buffer.Length}");
 
-			byte payloadwidth = (byte)(buffer[0] & 0x3F);
+				if (buffer[0] == 0)
+					break;
 
-			buffer = new byte[payloadwidth + 2];
+				byte payloadwidth = (byte)(buffer[0] & 0x3F);
 
-			sup = new UsbSetupPacket(0xC0, 0x20, 0, 0, (short)buffer.Length);
+				buffer = new byte[payloadwidth + 2];
+
+				sup = new UsbSetupPacket(0xC0, 0x20, 0, 0, (short)buffer.Length);
 
 
-			dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
+				dev.ControlTransfer(ref sup, buffer, buffer.Length, out len);
 
-			if (len != buffer.Length)
-				throw new Exception($"{len} bytes transferred instead of {buffer.Length}");
+				if (len != buffer.Length)
+					throw new Exception($"{len} bytes transferred instead of {buffer.Length}");
 
-			RXPacket p = new RXPacket();
-			p.Pipe = buffer[0];
-			p.Time = DateTime.Now.ToLongTimeString();
-			p.Payload = buffer.Skip(2).ToArray();
+				RXPacket p = new RXPacket();
+				p.Pipe = buffer[0] & 0x07;
+				p.Time = DateTime.Now.ToLongTimeString();
+				p.Payload = buffer.Skip(2).ToArray();
 
-			return p;
+				packets.Add(p);
+
+				if (((buffer[0] >> 3) & 0x01) != 0x01)		//no more data available
+					break;
+			}
+			return packets.ToArray();
 		}
 
 		public void Send(TXPacket p)

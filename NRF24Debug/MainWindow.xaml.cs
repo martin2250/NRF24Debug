@@ -113,12 +113,10 @@ namespace NRF24Debug
 		{
 			try
 			{
-				var rx = radio.PollForRxPacket();
+				RXPacket[] rx = radio.PollForRxPackets();
 
-				if (rx != null)
-				{
-					dataGridRec.Items.Add(rx);
-				}
+				foreach(var p in rx)
+					dataGridRec.Items.Add(p);
 			}
 			catch (Exception ex)
 			{
