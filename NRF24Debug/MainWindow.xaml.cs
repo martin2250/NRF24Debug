@@ -58,10 +58,10 @@ namespace NRF24Debug
 				gridPipes.Children.Add(cb);
 
 				ComboBox cob = pipesPW[pipe] = new ComboBox();
-				for (int i = 0; i <= 32; i++)
-					cob.Items.Add(i);
 				cob.Items.Add("DYNPD");
-				cob.SelectedIndex = 33;
+				for (int i = 0; i < 32; i++)
+					cob.Items.Add(i + 1);
+				cob.SelectedIndex = 0;
 				Grid.SetColumn(cob, 2);
 				Grid.SetRow(cob, pipe + 1);
 				gridPipes.Children.Add(cob);
@@ -198,8 +198,8 @@ namespace NRF24Debug
 					continue;
 				c.Pipes[i].Address = pipesAddr[i].Value;
 				c.Pipes[i].AutoAcknowledge = pipesAA[i].IsChecked.Value;
-				c.Pipes[i].DynamicPayload = pipesPW[i].SelectedIndex == 33;
-				c.Pipes[i].PayloadWidth = (pipesPW[i].SelectedIndex == 33) ? (byte)0 : ((byte)pipesPW[i].SelectedIndex);
+				c.Pipes[i].DynamicPayload = pipesPW[i].SelectedIndex == 0;
+				c.Pipes[i].PayloadWidth = (byte)pipesPW[i].SelectedIndex;
 			}
 
 			c.RetransmitCount = bvRetransmit.Value;
